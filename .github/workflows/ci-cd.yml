@@ -1,0 +1,44 @@
+name: Finance Calculator CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest -v
+
+  deploy:
+    name: Deploy to Linux VM
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux]
+    steps:
+      - name: Get tested source code
+        uses: actions/checkout@v4
+      - name: Deploy and smoke-test app
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEPLOY_DIR="$HOME/finance-app"
+          mkdir -p "$DEPLOY_DIR"
+          # Test the candidate before replacing the deployed application.
+          python3 app.py --demo
+          cp app.py "$DEPLOY_DIR/app.py"
+          printf '%s\n' "${GITHUB_SHA:0:7}" > "$DEPLOY_DIR/version.txt"
+          echo "Deployed $(cat "$DEPLOY_DIR/version.txt") to $DEPLOY_DIR"
