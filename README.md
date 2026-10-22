@@ -6,7 +6,7 @@
 ## Локальные тесты
 
 ```sh
-python3 -m pip install -r requirements-dev.txt
+python3 -m pip install -r requirements.txt
 python3 -m pytest -v
 python3 app.py --demo
 ```

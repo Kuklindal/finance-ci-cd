@@ -1,4 +1,3 @@
-
 import pytest
 
 from app import add_transaction, calculate_totals, load_transactions, save_transactions
