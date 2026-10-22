@@ -21,7 +21,7 @@ def add_transaction(transactions, kind, amount, description):
 def calculate_totals(transactions):
     incomes = sum(t["amount"] for t in transactions if t["kind"] == "income")
     expenses = sum(t["amount"] for t in transactions if t["kind"] == "expense")
-    balance = incomes - expenses
+    balance = incomes + expenses
     return incomes, expenses, balance
 
 
